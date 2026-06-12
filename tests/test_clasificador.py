@@ -128,3 +128,51 @@ def test_ppd_sin_pago_se_difiere():
     assert e["estatus"] == "DIFERIDA"
     assert e["regla"] == "R-04"
     assert r["totales"]["iva_acreditable"] == Decimal("0.00")
+
+
+# --- Tests de validación de periodo entre ZIP y periodo declarado ---
+
+def _cfdi_simple(uuid_sufijo: str, fecha: str, rfc_receptor: str = "CACX7605101P8") -> dict:
+    return {
+        "tipo_doc": "cfdi", "archivo": "x.xml", "version": "4.0",
+        "uuid": f"CCCCCCCC-0000-4000-8000-{uuid_sufijo.zfill(12)}",
+        "tipo": "I", "fecha": fecha, "serie": "", "folio": "",
+        "moneda": "MXN", "tipo_cambio": Decimal("1"),
+        "forma_pago": "03", "metodo_pago": "PUE",
+        "subtotal": Decimal("1000.00"), "descuento": Decimal("0"),
+        "total": Decimal("1160.00"),
+        "emisor": {"rfc": "XAXX010101000", "nombre": "Proveedor", "regimen_fiscal": "601"},
+        "receptor": {"rfc": rfc_receptor, "nombre": "Yo", "uso_cfdi": "G03",
+                     "regimen_fiscal": "625", "domicilio_fiscal": "01000"},
+        "conceptos": [{"descripcion": "limpieza", "clave_prod_serv": "85121602",
+                       "cantidad": Decimal("1"), "valor_unitario": Decimal("1000"),
+                       "importe": Decimal("1000"), "descuento": Decimal("0")}],
+        "iva_trasladado": Decimal("160.00"), "iva_retenido": Decimal("0"),
+        "isr_retenido": Decimal("0"), "relacionados": [], "pagos": [],
+    }
+
+
+def test_advertencia_zip_cfdi_de_otro_mes():
+    """ZIP con CFDIs de mes distinto al declarado → advertencia con meses disponibles."""
+    parseo = {
+        "comprobantes": [_cfdi_simple("0001", "2026-04-15T10:00:00")],
+        "retenciones": [], "errores": [],
+    }
+    r = clasifica(parseo, 2026, 5, "plataformas")
+    assert r["advertencias"], "Esperaba advertencia al pedir 2026-05 con ZIP de 2026-04"
+    adv = r["advertencias"][0]
+    assert "2026-05" in adv
+    assert "2026-04" in adv
+
+
+def test_advertencia_zip_completamente_vacio():
+    """ZIP sin ningún CFDI válido → advertencia explícita."""
+    parseo = {"comprobantes": [], "retenciones": [], "errores": []}
+    r = clasifica(parseo, 2026, 5, "plataformas")
+    assert r["advertencias"], "Esperaba advertencia con ZIP vacío"
+    assert "válidos" in r["advertencias"][0].lower()
+
+
+def test_sin_advertencia_cuando_hay_cfdis_del_periodo(resultado):
+    """Fixture del periodo correcto → campo advertencias vacío."""
+    assert resultado["advertencias"] == []

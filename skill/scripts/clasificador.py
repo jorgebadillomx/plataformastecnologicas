@@ -172,6 +172,23 @@ def clasifica(parseo: dict, anio: int, mes: int, regimen: str = "plataformas",
     clave_periodo = f"{anio:04d}-{mes:02d}"
     del_periodo = [c for c in comprobantes if c["fecha"].startswith(clave_periodo)]
 
+    advertencias_clasif: list[str] = []
+    if not del_periodo:
+        if comprobantes:
+            meses_zip = sorted(set(
+                c["fecha"][:7] for c in comprobantes if len(c.get("fecha", "")) >= 7
+            ))
+            advertencias_clasif.append(
+                f"El ZIP no contiene CFDI con fecha {clave_periodo}. "
+                f"Meses encontrados en el ZIP: {', '.join(meses_zip) if meses_zip else 'ninguno identificado'}. "
+                "Verifica que cargaste el ZIP del periodo correcto."
+            )
+        else:
+            advertencias_clasif.append(
+                "El ZIP no contiene CFDI válidos. "
+                "Verifica que el archivo incluye XMLs del SAT."
+            )
+
     # RFC del usuario: explícito o el receptor más frecuente (es SU buzón de recibidas).
     if not rfc_usuario:
         conteo: dict[str, int] = {}
@@ -288,6 +305,7 @@ def clasifica(parseo: dict, anio: int, mes: int, regimen: str = "plataformas",
         "deducciones_personales": _lista("DEDUCCION_PERSONAL"),
         "inversiones": _lista("INVERSION"),
         "errores_parseo": parseo.get("errores", []),
+        "advertencias": advertencias_clasif,
     }
 
 
@@ -353,6 +371,8 @@ def main(argv: list[str] | None = None) -> int:
         f"{t['deducciones_personales']} deducciones personales, {t['inversiones']} inversiones",
         file=sys.stderr,
     )
+    for adv in resultado["advertencias"]:
+        print(f"[clasificador]   aviso: {adv}", file=sys.stderr)
     return 0
 
 

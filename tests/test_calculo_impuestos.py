@@ -155,6 +155,103 @@ def test_oportunidad_definitivos():
     assert fuera["podria_aplicar"] is False
 
 
+# --- Tests de validación de periodo CSV vs periodo declarado ---
+
+def _clas_minimo(periodo: str = "2026-05") -> dict:
+    """Clasificación mínima para tests de validación de periodo."""
+    return {
+        "periodo": periodo, "regimen": "plataformas", "rfc_usuario": "CACX7605101P8",
+        "totales": {
+            "iva_acreditable": "0.00", "base_deducible_isr": "0.00",
+            "deducibles": 0, "ajustes": 0, "no_deducibles": 0,
+            "dudosas": 0, "diferidas": 0,
+            "deducciones_personales": 0, "inversiones": 0, "excluidos_doc": 0,
+        },
+        "evaluaciones": [], "dudosas": [], "deducciones_personales": [],
+        "inversiones": [], "errores_parseo": [], "advertencias": [],
+    }
+
+
+def _plat_por_mes(periodos: list) -> dict:
+    """Plataforma JSON con por_mes solo para los periodos indicados."""
+    mes = {"isr_retenido": "400", "iva_retenido": "800", "ingresos_recibidos": "9250",
+           "filas_ingreso": 1, "filas_retencion": 2}
+    return {
+        "plataforma": "airbnb", "archivo": "test.csv",
+        "totales": mes,
+        "por_mes": {p: mes for p in periodos},
+        "advertencias": [],
+    }
+
+
+def test_periodo_csv_no_coincide_genera_advertencia(tmp_path):
+    """CSV con por_mes de mes distinto → advertencia con el periodo pedido y los disponibles."""
+    import calculo_impuestos
+
+    clas_json = tmp_path / "clas.json"
+    plat_json = tmp_path / "plat.json"
+    out_json = tmp_path / "calc.json"
+    clas_json.write_text(json.dumps(_clas_minimo("2026-05")), encoding="utf-8")
+    plat_json.write_text(json.dumps(_plat_por_mes(["2026-04"])), encoding="utf-8")
+
+    calculo_impuestos.main([
+        "--clasificacion", str(clas_json), "--plataforma", str(plat_json),
+        "--periodo", "2026-05", "-o", str(out_json),
+    ])
+
+    salida = json.loads(out_json.read_text(encoding="utf-8"))
+    adv_periodo = [a for a in salida["advertencias"] if "2026-05" in a or "no contiene" in a.lower()]
+    assert adv_periodo, f"Sin advertencia de periodo. Advertencias: {salida['advertencias']}"
+    assert "2026-04" in adv_periodo[0]
+
+
+def test_periodo_csv_sin_desglose_mensual_genera_advertencia(tmp_path):
+    """CSV con por_mes vacío (sin fechas en el reporte) → advertencia de sin desglose."""
+    import calculo_impuestos
+
+    clas_json = tmp_path / "clas.json"
+    plat_json = tmp_path / "plat.json"
+    out_json = tmp_path / "calc.json"
+    clas_json.write_text(json.dumps(_clas_minimo("2026-05")), encoding="utf-8")
+    plat = {
+        "plataforma": "airbnb", "archivo": "test.csv",
+        "totales": {"isr_retenido": "400", "iva_retenido": "800", "ingresos_recibidos": "9250",
+                    "filas_ingreso": 1, "filas_retencion": 2},
+        "por_mes": {},
+        "advertencias": [],
+    }
+    plat_json.write_text(json.dumps(plat), encoding="utf-8")
+
+    calculo_impuestos.main([
+        "--clasificacion", str(clas_json), "--plataforma", str(plat_json),
+        "--periodo", "2026-05", "-o", str(out_json),
+    ])
+
+    salida = json.loads(out_json.read_text(encoding="utf-8"))
+    assert any("desglose mensual" in a.lower() or "fecha" in a.lower()
+               for a in salida["advertencias"])
+
+
+def test_periodo_csv_coincide_sin_advertencia_de_periodo(tmp_path):
+    """CSV con el periodo correcto en por_mes → sin advertencia de periodo."""
+    import calculo_impuestos
+
+    clas_json = tmp_path / "clas.json"
+    plat_json = tmp_path / "plat.json"
+    out_json = tmp_path / "calc.json"
+    clas_json.write_text(json.dumps(_clas_minimo("2026-05")), encoding="utf-8")
+    plat_json.write_text(json.dumps(_plat_por_mes(["2026-05"])), encoding="utf-8")
+
+    calculo_impuestos.main([
+        "--clasificacion", str(clas_json), "--plataforma", str(plat_json),
+        "--periodo", "2026-05", "-o", str(out_json),
+    ])
+
+    salida = json.loads(out_json.read_text(encoding="utf-8"))
+    assert not any("no contiene" in a.lower() for a in salida["advertencias"])
+    assert not any("desglose mensual" in a.lower() for a in salida["advertencias"])
+
+
 def test_cli_e2e_mvp(tmp_path):
     """Flujo completo con fixtures: parse → clasifica → calcula (como lo correrá el skill)."""
     import calculo_impuestos

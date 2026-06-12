@@ -312,14 +312,34 @@ def main(argv: list[str] | None = None) -> int:
     plataforma = _carga_json(args.plataforma)
     anio, mes = (int(p) for p in args.periodo.split("-"))
 
-    totales_mes = plataforma.get("por_mes", {}).get(args.periodo, plataforma["totales"])
+    advertencias_previas: list[str] = []
+    por_mes = plataforma.get("por_mes", {})
+    if args.periodo in por_mes:
+        totales_mes = por_mes[args.periodo]
+    elif por_mes:
+        meses_disponibles = ", ".join(sorted(por_mes.keys()))
+        advertencias_previas.append(
+            f"ADVERTENCIA: el reporte de la plataforma no contiene datos para el periodo "
+            f"{args.periodo}. Meses disponibles en el CSV: {meses_disponibles}. "
+            "Verifica que estás usando el reporte correcto antes de declarar. "
+            "Se usaron los totales globales del CSV como aproximación (resultados NO confiables)."
+        )
+        totales_mes = plataforma["totales"]
+    else:
+        advertencias_previas.append(
+            f"El reporte de la plataforma no trae desglose mensual (sin columna de fecha). "
+            "Se usan los totales globales del CSV. Verifica que el reporte corresponde "
+            f"al periodo {args.periodo} antes de declarar."
+        )
+        totales_mes = plataforma["totales"]
+
     conciliacion = concilia_plataforma(totales_mes, args.actividad)
     base_mes = conciliacion["base_gravable_estimada"]
     iva_acreditable = Decimal(str(clasificacion["totales"]["iva_acreditable"]))
     base_deducible = Decimal(str(clasificacion["totales"]["base_deducible_isr"]))
     isr_retenido_mes = conciliacion["isr_retenido"]
 
-    advertencias = list(conciliacion["advertencias"])
+    advertencias = advertencias_previas + list(conciliacion["advertencias"])
     if args.historial:
         historial = _carga_json(args.historial)
         historial.append({
