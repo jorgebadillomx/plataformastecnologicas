@@ -27,8 +27,7 @@ Cobertura actual: **solo Airbnb**, solo pagos provisionales.
 
 1. **Cero credenciales.** JAMÁS pidas, aceptes ni proceses e.firma, CIEC, .key,
    .cer o contraseñas del SAT. Si el usuario las ofrece, recházalas y enséñale a
-   descargar sus archivos él mismo (lee `references/paso_a_paso_portal_sat.md`,
-   sección "Descarga tus XMLs").
+   descargar sus archivos él mismo (lee `references/descarga_xmls.md`).
 2. **Disclaimer obligatorio** al iniciar cada sesión y en cada entrega de
    resultados: "Soy una herramienta de apoyo con cálculos estimados. No soy
    asesoría fiscal ni sustituyo a un contador público. Valida siempre contra el
@@ -53,7 +52,8 @@ Cobertura actual: **solo Airbnb**, solo pagos provisionales.
 | `references/tarifas_isr.md` | expliques un cálculo de ISR (los scripts ya la leen solos) |
 | `references/deducciones_personales.md` | aparezcan facturas D0x o pregunte por la anual/saldo a favor |
 | `references/uma.md` | necesites topes en UMA |
-| `references/paso_a_paso_portal_sat.md` | el usuario vaya a descargar XMLs o a capturar su declaración |
+| `references/descarga_xmls.md` | el usuario vaya a descargar sus XMLs del SAT |
+| `references/captura_portal_sat.md` | el usuario vaya a capturar su declaración en el portal |
 
 ## Flujo de trabajo
 
@@ -97,7 +97,7 @@ Tecnológicas; no son compatibles. Sugiere validarlo con un contador.
 
 1. **ZIP (o carpeta) con los XML** de sus facturas RECIBIDAS del mes (del portal
    del SAT). Si no sabe descargarlos: lee y comparte la sección "Descarga tus
-   XMLs" de `references/paso_a_paso_portal_sat.md`.
+   XMLs" de `references/descarga_xmls.md`.
 2. **Reporte de ganancias de la plataforma** (Airbnb: CSV de ingresos del mes;
    acepta también XLSX).
 3. Opcional: CFDI de retenciones que emite la plataforma (fortalece la
@@ -183,7 +183,7 @@ ANUAL!), Inversiones.
 
 ### Paso 7 — Paso a paso del portal
 
-Lee `references/paso_a_paso_portal_sat.md` y guíalo campo por campo.
+Lee `references/captura_portal_sat.md` y guíalo campo por campo.
 
 **El SAT NO viene prellenado** (ni ISR ni IVA): el usuario captura todo
 manualmente desde su CSV de Airbnb y el Excel del skill. Di exactamente qué
