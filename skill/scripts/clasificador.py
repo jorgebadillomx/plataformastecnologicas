@@ -297,6 +297,23 @@ def _json_default(value):
     raise TypeError(f"No serializable: {type(value)}")
 
 
+# Campos por factura que el modelo necesita en conversación (presentar dudosas,
+# registrar decisiones por UUID, explicar regla/motivo). El resto del registro
+# (forma de pago, RFC emisor, montos siempre-cero en estos arrays, etc.) vive en
+# el JSON completo y en el Excel — quitarlo del resumen ahorra contexto sin
+# afectar la decisión: el motivo ya cita la regla que dependa de esos campos.
+CAMPOS_RESUMEN_FACTURA = (
+    "uuid", "fecha", "emisor", "descripcion", "uso_cfdi",
+    "total", "iva_detectado", "regla", "motivo",
+)
+
+
+def _compacta_factura(ev: dict) -> dict:
+    compacta = {k: ev[k] for k in CAMPOS_RESUMEN_FACTURA}
+    compacta["fecha"] = compacta["fecha"][:10]  # la hora no aporta a la decisión
+    return compacta
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Clasificador de CFDI por régimen con reglas citadas")
     parser.add_argument("entrada", help="ZIP/carpeta con XMLs (o JSON ya parseado de parse_cfdi)")
@@ -317,6 +334,8 @@ def main(argv: list[str] | None = None) -> int:
         ruta_completa = Path(args.salida)
         ruta_completa.write_text(texto, encoding="utf-8")
         resumen = {k: v for k, v in resultado.items() if k != "evaluaciones"}
+        for clave in ("dudosas", "deducciones_personales", "inversiones"):
+            resumen[clave] = [_compacta_factura(e) for e in resultado[clave]]
         ruta_resumen = ruta_completa.parent / (ruta_completa.stem + "_resumen" + ruta_completa.suffix)
         ruta_resumen.write_text(
             json.dumps(resumen, ensure_ascii=False, indent=2, default=_json_default),

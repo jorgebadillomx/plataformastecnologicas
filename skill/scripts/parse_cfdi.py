@@ -389,7 +389,17 @@ def main(argv: list[str] | None = None) -> int:
     texto = json.dumps(resultado, ensure_ascii=False, indent=2, default=_json_default)
 
     if args.salida:
-        Path(args.salida).write_text(texto, encoding="utf-8")
+        ruta_completa = Path(args.salida)
+        ruta_completa.write_text(texto, encoding="utf-8")
+        # Resumen para lectura conversacional: inventario y errores, SIN los
+        # arrays completos de comprobantes/retenciones (que solo consume el
+        # re-parseo de clasificador.py, no el modelo). Ahorra tokens de contexto.
+        resumen = {k: resultado[k] for k in ("fuente", "resumen", "errores")}
+        ruta_resumen = ruta_completa.parent / (ruta_completa.stem + "_resumen" + ruta_completa.suffix)
+        ruta_resumen.write_text(
+            json.dumps(resumen, ensure_ascii=False, indent=2, default=_json_default),
+            encoding="utf-8",
+        )
     else:
         print(texto)
 

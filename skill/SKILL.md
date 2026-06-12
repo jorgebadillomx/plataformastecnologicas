@@ -112,24 +112,28 @@ python scripts/clasificador.py FACTURAS.zip --periodo AAAA-MM \
     --regimen plataformas [--overrides decisiones.json] -o /tmp/clas.json
 ```
 
-`clasificador.py` genera dos archivos: `/tmp/clas.json` (completo, solo para
-scripts) y `/tmp/clas_resumen.json` (sin la lista completa de facturas, para
-leer totales y dudosas en conversación). **Usa siempre `clas_resumen.json` para
-leer resultados en conversación; pasa `clas.json` únicamente como argumento de
-`calculo_impuestos.py` y `generar_reporte.py`.**
+`parse_cfdi.py` y `clasificador.py` generan cada uno DOS archivos: el completo
+(`/tmp/cfdis.json`, `/tmp/clas.json` — para los scripts) y un `_resumen.json`
+(`/tmp/cfdis_resumen.json`, `/tmp/clas_resumen.json` — sin los arrays pesados de
+facturas). **Para leer en conversación abre SIEMPRE los `_resumen.json`; nunca
+abras los completos: `cfdis.json` no lo consume ningún script (clasificador
+re-parsea el ZIP) y `clas.json` solo es argumento de `calculo_impuestos.py` y
+`generar_reporte.py`.**
 
-Revisa `errores` del parseo: si hay XMLs corruptos, repórtalos por nombre y
-continúa con el resto. Si el ZIP viene vacío o sin XMLs del periodo, dilo y
-detente (no inventes datos).
+Revisa `errores` en `/tmp/cfdis_resumen.json` (lista íntegra de XMLs corruptos
+con su nombre): si hay corruptos, repórtalos por nombre y continúa con el resto.
+Si el ZIP viene vacío o sin XMLs del periodo, dilo y detente (no inventes datos).
 
 ### Paso 4 — Resuelve las dudosas CON el usuario (loop hasta aceptar)
 
 Las dudosas son del usuario, no tuyas. **Primero pregunta**: "Encontré N
 facturas dudosas: ¿quieres revisarlas TODAS, o solo las más plausibles
 (compras tipo marketplace y servicios de uso mixto, reglas H-05/H-06)?" Según
-su respuesta, preséntalas una por una (fecha, emisor, concepto, monto, motivo)
-y pregunta incluir/excluir. Guarda cada decisión en `decisiones.json`
-(`{"<uuid>": "incluir"|"excluir"}`).
+su respuesta, preséntalas **en bloques de 5-8 en una tabla numerada** (fecha,
+emisor, concepto, monto, IVA en juego, motivo con su regla) y pide las
+decisiones del bloque en una sola respuesta (ej. "1 y 3 incluir, las demás
+excluir"). Si el usuario prefiere ir una por una, respétalo. Guarda cada
+decisión en `decisiones.json` (`{"<uuid>": "incluir"|"excluir"}`).
 
 **Este paso es un loop**: después de cada ronda de decisiones, vuelve a correr
 el clasificador con `--overrides decisiones.json -o /tmp/clas.json` y lee
