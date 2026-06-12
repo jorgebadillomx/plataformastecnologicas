@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" Version="4.0" Serie="E" Folio="300" Fecha="2026-05-03T08:00:00" FormaPago="03" MetodoPago="PUE" Moneda="MXN" SubTotal="5000.00" Total="5000.00" TipoDeComprobante="I" Exportacion="01" LugarExpedicion="64000" Sello="X" NoCertificado="00000000000000000000" Certificado="X">
+  <cfdi:Emisor Rfc="IIA040805DZ4" Nombre="INSTITUTO EDUCATIVO SINTETICO AC" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="CACX7605101P8" Nombre="XOCHILT CASAS CHAVEZ" DomicilioFiscalReceptor="64000" RegimenFiscalReceptor="625" UsoCFDI="D10"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="86121500" Cantidad="1" ClaveUnidad="E48" Descripcion="Colegiatura primaria mayo 2026" ValorUnitario="5000.00" Importe="5000.00" ObjetoImp="01"/>
+  </cfdi:Conceptos>
+  <cfdi:Complemento>
+    <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="1.1" UUID="aaaaaaaa-0000-4000-8000-000000000006" FechaTimbrado="2026-05-03T08:01:00" SelloCFD="X" NoCertificadoSAT="00000000000000000000" SelloSAT="X" RfcProvCertif="XAXX010101000"/>
+  </cfdi:Complemento>
+</cfdi:Comprobante>

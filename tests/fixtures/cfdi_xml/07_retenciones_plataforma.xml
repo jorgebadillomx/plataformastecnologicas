@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<retenciones:Retenciones xmlns:retenciones="http://www.sat.gob.mx/esquemas/retencionpago/2" xmlns:plataformasTecnologicas="http://www.sat.gob.mx/esquemas/retencionpago/1/PlataformasTecnologicas10" Version="2.0" FolioInt="RET-2026-05" FechaExp="2026-06-03T12:00:00" LugarExpRetenc="64000" CveRetenc="25" DescRetenc="Servicios plataformas tecnologicas" Sello="X" NoCertificado="00000000000000000000" Certificado="X">
+  <retenciones:Emisor RfcE="EKU9003173C9" NomDenRazSocE="PLATAFORMA HOSPEDAJE DIGITAL SA DE CV" RegimenFiscalE="601"/>
+  <retenciones:Receptor NacionalidadR="Nacional">
+    <retenciones:Nacional RfcR="CACX7605101P8" NomDenRazSocR="XOCHILT CASAS CHAVEZ" DomicilioFiscalR="64000"/>
+  </retenciones:Receptor>
+  <retenciones:Periodo MesIni="05" MesFin="05" Ejercicio="2026"/>
+  <retenciones:Totales MontoTotOperacion="10000.00" MontoTotGrav="10000.00" MontoTotExent="0.00" MontoTotRet="1200.00">
+    <retenciones:ImpRetenidos BaseRet="10000.00" ImpuestoRet="01" MontoRet="400.00" TipoPagoRet="04"/>
+    <retenciones:ImpRetenidos BaseRet="1600.00" ImpuestoRet="02" MontoRet="800.00" TipoPagoRet="04"/>
+  </retenciones:Totales>
+  <retenciones:Complemento>
+    <plataformasTecnologicas:ServiciosPlataformasTecnologicas Version="1.0" Periodicidad="04" NumServ="3" MonTotServSIVA="10000.00" TotalIVATrasladado="1600.00" TotalIVARetenido="800.00" TotalISRRetenido="400.00" MonTotalporUsoPlataforma="300.00"/>
+    <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="1.1" UUID="aaaaaaaa-0000-4000-8000-000000000007" FechaTimbrado="2026-06-03T12:01:00" SelloCFD="X" NoCertificadoSAT="00000000000000000000" SelloSAT="X" RfcProvCertif="XAXX010101000"/>
+  </retenciones:Complemento>
+</retenciones:Retenciones>

@@ -1,0 +1,6 @@
+Fecha,Tipo,Código de confirmación,Fecha de inicio,Noches,Huésped,Anuncio,Detalles,Moneda,Monto,Ingresos recibidos
+05/02/2026,Reservación,HMABC123XY,05/01/2026,2,Huésped Uno,Depto Centro Sintético,,MXN,"4,000.00","3,700.00"
+05/10/2026,Reservación,HMDEF456ZW,05/09/2026,3,Huésped Dos,Depto Centro Sintético,,MXN,"3,500.00","3,237.50"
+05/22/2026,Reservación,HMGHI789QP,05/21/2026,1,Huésped Tres,Depto Centro Sintético,,MXN,"2,500.00","2,312.50"
+05/31/2026,Retención del impuesto sobre la renta para México,,,,,,Retención mensual,MXN,-400.00,
+05/31/2026,Retención del IVA en México,,,,,,Retención mensual,MXN,-800.00,

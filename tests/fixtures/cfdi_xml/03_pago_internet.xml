@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" Version="4.0" Serie="P" Folio="77" Fecha="2026-05-20T09:00:00" Moneda="XXX" SubTotal="0" Total="0" TipoDeComprobante="P" Exportacion="01" LugarExpedicion="64000" Sello="X" NoCertificado="00000000000000000000" Certificado="X">
+  <cfdi:Emisor Rfc="IXS7607092R5" Nombre="CONECTIVIDAD DEL NORTE SA DE CV" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="CACX7605101P8" Nombre="XOCHILT CASAS CHAVEZ" DomicilioFiscalReceptor="64000" RegimenFiscalReceptor="625" UsoCFDI="CP01"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="84111506" Cantidad="1" ClaveUnidad="ACT" Descripcion="Pago" ValorUnitario="0" Importe="0" ObjetoImp="01"/>
+  </cfdi:Conceptos>
+  <cfdi:Complemento>
+    <pago20:Pagos xmlns:pago20="http://www.sat.gob.mx/Pagos20" Version="2.0">
+      <pago20:Totales MontoTotalPagos="580.00" TotalTrasladosBaseIVA16="500.00" TotalTrasladosImpuestoIVA16="80.00"/>
+      <pago20:Pago FechaPago="2026-05-20T09:00:00" FormaDePagoP="03" MonedaP="MXN" TipoCambioP="1" Monto="580.00">
+        <pago20:DoctoRelacionado IdDocumento="aaaaaaaa-0000-4000-8000-000000000002" MonedaDR="MXN" EquivalenciaDR="1" NumParcialidad="1" ImpSaldoAnt="580.00" ImpPagado="580.00" ImpSaldoInsoluto="0.00" ObjetoImpDR="02">
+          <pago20:ImpuestosDR>
+            <pago20:TrasladosDR>
+              <pago20:TrasladoDR BaseDR="500.00" ImpuestoDR="002" TipoFactorDR="Tasa" TasaOCuotaDR="0.160000" ImporteDR="80.00"/>
+            </pago20:TrasladosDR>
+          </pago20:ImpuestosDR>
+        </pago20:DoctoRelacionado>
+      </pago20:Pago>
+    </pago20:Pagos>
+    <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="1.1" UUID="aaaaaaaa-0000-4000-8000-000000000003" FechaTimbrado="2026-05-20T09:01:00" SelloCFD="X" NoCertificadoSAT="00000000000000000000" SelloSAT="X" RfcProvCertif="XAXX010101000"/>
+  </cfdi:Complemento>
+</cfdi:Comprobante>
